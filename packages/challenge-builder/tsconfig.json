@@ -7,6 +7,14 @@
     "module": "es2020",
     "moduleResolution": "bundler",
     "outDir": "dist",
-    "noEmit": false
+    "noEmit": false,
+    "paths": {
+      "@freecodecamp/shared/config/challenge-types": [
+        "../shared/src/config/challenge-types.ts"
+      ],
+      "@freecodecamp/shared/utils/polyvinyl": [
+        "../shared/src/utils/polyvinyl.ts"
+      ]
+    }
   }
 }
