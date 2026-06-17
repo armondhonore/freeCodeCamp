@@ -1,16 +1,20 @@
 application:
   name: bold-lake-freecodecamp
   pods:
-    - name: app
+    - name: client
       image: "# filled by pipeline"
       servicePorts:
         - 8000
       vars:
-        FREECODECAMP_NODE_ENV: "production"
-        DEPLOYMENT_ENV: "staging"
-        CLIENT_LOCALE: "english"
-        CURRICULUM_LOCALE: "english"
-        HOME_LOCATION: "<% URL %>"
-        API_LOCATION: "<% URL %>/api"
-        forumLocation: "https://forum.freecodecamp.org"
-        NODE_OPTIONS: "--max-old-space-size=8192"
+        NODE_ENV: "production"
+    - name: api
+      image: "# filled by pipeline"
+      servicePorts:
+        - 3000
+      vars:
+        PORT: "3000"
+        MONGOHQ_URL: "mongodb://${mongodb:27017}/freecodecamp"
+    - name: mongodb
+      image: mirror.gcr.io/library/mongo:7
+      servicePorts:
+        - 27017
