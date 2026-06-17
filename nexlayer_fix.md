@@ -46,7 +46,7 @@ EXPOSE 8000
 
 WORKDIR /app/client
 
-CMD ["pnpm", "run", "serve"]
+CMD ["node_modules/.bin/gatsby", "serve", "-p", "8000", "--host", "0.0.0.0"]
 ```
 
 ## Fixed nexlayer.yaml
