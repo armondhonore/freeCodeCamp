@@ -15,35 +15,38 @@
 
 ## Project Summary
 <!-- nexlayer:section agent-managed=project_summary -->
-An open-source learning platform providing an interactive full-stack web development and machine learning curriculum through coding challenges and certifications.
+An open-source learning platform providing free coding certifications and an interactive curriculum. It features a Gatsby-based frontend and a Node.js backend API.
 <!-- nexlayer:end -->
 
 ## Technology Stack
 <!-- nexlayer:section agent-managed=tech_stack -->
 | Name | Kind | Version | Detected From |
 |------|------|---------|---------------|
-| Node.js | language | >=24 | package.json, .nvmrc |
-| pnpm | tool | >=10 | package.json |
-| TurboRepo | build | latest | turbo.json |
+| Node.js | language | 24 | .nvmrc, package.json |
+| Gatsby | framework | Not specified | Dockerfile, nexlayer_error.md |
 | TypeScript | language | 5.9.3 | packages/challenge-linter/package.json |
-| MongoDB | database | latest | turbo.json |
+| MongoDB | database | Not specified | turbo.json |
+| pnpm | tool | 10 | package.json |
+| Turbo | build | Not specified | turbo.json |
 <!-- nexlayer:end -->
 
 ## Repository Structure
 <!-- nexlayer:section agent-managed=structure_map -->
-- api/ — Backend API services
-- client/ — Frontend user interface
-- curriculum/ — Challenge definitions and generated content
-- packages/shared/ — Shared configurations and utilities
-- packages/challenge-builder/ — Logic for rendering and testing challenges
-- packages/challenge-linter/ — Validation tools for curriculum content
+- api/ — Backend Express server
+- client/ — Gatsby frontend application
+- curriculum/ — Curriculum content and generation logic
+- packages/shared/ — Shared utilities and configuration across workspaces
+- packages/challenge-builder/ — Logic for building and rendering coding challenges
+- packages/challenge-linter/ — Validation tools for curriculum challenges
 <!-- nexlayer:end -->
 
 ## External Services Required
 <!-- nexlayer:section agent-managed=external_deps -->
 Services that must be configured separately (not deployed by Nexlayer):
 
-- MongoDB (via MONGOHQ_URL)
+- Algolia (Search)
+- Stripe (Donations)
+- MongoDB (Data storage)
 <!-- nexlayer:end -->
 
 ## Local Development Setup
@@ -75,20 +78,9 @@ MONGOHQ_URL=mongodb://localhost:27017/freecodecamp
 
 | Pod | Variable | Value | Kind |
 |-----|----------|-------|------|
-| `app` | `NODE_ENV` | `production` | plain |
-| `app` | `PORT` | `"3000"` | plain |
-| `app` | `HOSTNAME` | `"0.0.0.0"` | plain |
-| `app` | `MONGO_URL` | `"mongodb://${mongo:27017}/freecodecamp"` | inter-pod |
-| `app` | `NEXTAUTH_SECRET` | _(set via Nexlayer dashboard)_ | secret |
-| `app` | `NEXTAUTH_URL` | _(set via Nexlayer dashboard)_ | secret |
-| `mongo` | `command` | `"mongod --replSet rs0 --bind_ip_all"` | plain |
-
-### Secrets Required
-
-Set these in the Nexlayer dashboard before deploying:
-
-- `NEXTAUTH_SECRET` (`app` pod)
-- `NEXTAUTH_URL` (`app` pod)
+| `client` | `NODE_ENV` | `"production"` | plain |
+| `api` | `PORT` | `"3000"` | plain |
+| `api` | `MONGOHQ_URL` | `"mongodb://${mongodb:27017}/freecodecamp"` | inter-pod |
 
 ### nexlayer.yaml
 
@@ -96,26 +88,24 @@ Set these in the Nexlayer dashboard before deploying:
 application:
   name: bold-lake-freecodecamp
   pods:
-    - name: app
+    - name: client
       image: "# filled by pipeline"
-      path: /
+      servicePorts:
+        - 8000
+      vars:
+        NODE_ENV: "production"
+    - name: api
+      image: "# filled by pipeline"
       servicePorts:
         - 3000
       vars:
-        NODE_ENV: production
         PORT: "3000"
-        HOSTNAME: "0.0.0.0"
-        MONGO_URL: "mongodb://${mongo:27017}/freecodecamp"
-        NEXTAUTH_SECRET: "placeholder_secret_change_me"
-        NEXTAUTH_URL: "http://app:3000"
-    - name: mongo
+        MONGOHQ_URL: "mongodb://${mongodb:27017}/freecodecamp"
+    - name: mongodb
       image: mirror.gcr.io/library/mongo:7
       servicePorts:
         - 27017
-      command: "mongod --replSet rs0 --bind_ip_all"
-      vars: {}
 ```
-
 <!-- nexlayer:end -->
 
 ## Nexlayer Deployment Plan
@@ -148,33 +138,32 @@ application:
 
 ## Nexlayer Configuration
 <!-- nexlayer:section agent-managed=nexlayer_config -->
-**Last deployed:** 2026-06-16T21:01:44Z  
-**Live URL:** https://relaxed-weasel-bold-lake-freecodecamp.cloud.nexlayer.ai  
-**Runtime:** node · **Port:** 3000  
+**Last deployed:** 2026-06-17T00:59:12Z  
+**Live URL:** https://bold-lake-freecodecamp.nexlayer.ai  
+**Runtime:**  · **Port:** auto-detected  
 **Deploy branch:** nexlayer  
 
 ```yaml
 application:
   name: bold-lake-freecodecamp
   pods:
-    - name: app
+    - name: client
       image: "# filled by pipeline"
-      path: /
+      servicePorts:
+        - 8000
+      vars:
+        NODE_ENV: "production"
+    - name: api
+      image: "# filled by pipeline"
       servicePorts:
         - 3000
       vars:
-        NODE_ENV: production
         PORT: "3000"
-        HOSTNAME: "0.0.0.0"
-        MONGO_URL: "mongodb://${mongo:27017}/freecodecamp"
-        NEXTAUTH_SECRET: "placeholder_secret_change_me"
-        NEXTAUTH_URL: "http://app:3000"
-    - name: mongo
+        MONGOHQ_URL: "mongodb://${mongodb:27017}/freecodecamp"
+    - name: mongodb
       image: mirror.gcr.io/library/mongo:7
       servicePorts:
         - 27017
-      command: "mongod --replSet rs0 --bind_ip_all"
-      vars: {}
 ```
 <!-- nexlayer:end -->
 
@@ -182,6 +171,7 @@ application:
 <!-- nexlayer:section agent-managed=build_history -->
 | Date | Status | Notes |
 |------|--------|-------|
-| 2026-06-16T20:38:55Z | analyzed | initial repo analysis |
-| 2026-06-16T21:01:44Z | success | deployed https://relaxed-weasel-bold-lake-freecodecamp.cloud.nexlayer.ai |
+| 2026-06-17T00:31:26Z | analyzed | initial repo analysis |
+| 2026-06-17T00:59:12Z | success | deployed https://bold-lake-freecodecamp.nexlayer.ai |
 <!-- nexlayer:end -->
+

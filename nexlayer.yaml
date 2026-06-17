@@ -1,21 +1,20 @@
 application:
   name: bold-lake-freecodecamp
   pods:
-    - name: app
+    - name: client
       image: "# filled by pipeline"
-      path: /
+      servicePorts:
+        - 8000
+      vars:
+        NODE_ENV: "production"
+    - name: api
+      image: "# filled by pipeline"
       servicePorts:
         - 3000
       vars:
-        NODE_ENV: production
         PORT: "3000"
-        HOSTNAME: "0.0.0.0"
-        MONGO_URL: "mongodb://${mongo:27017}/freecodecamp"
-        NEXTAUTH_SECRET: "placeholder_secret_change_me"
-        NEXTAUTH_URL: "http://app:3000"
-    - name: mongo
+        MONGOHQ_URL: "mongodb://${mongodb:27017}/freecodecamp"
+    - name: mongodb
       image: mirror.gcr.io/library/mongo:7
       servicePorts:
         - 27017
-      command: "mongod --replSet rs0 --bind_ip_all"
-      vars: {}
