@@ -15,38 +15,35 @@
 
 ## Project Summary
 <!-- nexlayer:section agent-managed=project_summary -->
-An open-source learning platform providing free coding certifications and an interactive curriculum. It features a Gatsby-based frontend and a Node.js backend API.
+freeCodeCamp is an open-source learning platform providing interactive coding challenges and certifications. It consists of a Gatsby-based frontend and a Node.js API backend.
 <!-- nexlayer:end -->
 
 ## Technology Stack
 <!-- nexlayer:section agent-managed=tech_stack -->
 | Name | Kind | Version | Detected From |
 |------|------|---------|---------------|
-| Node.js | language | 24 | .nvmrc, package.json |
-| Gatsby | framework | Not specified | Dockerfile, nexlayer_error.md |
-| TypeScript | language | 5.9.3 | packages/challenge-linter/package.json |
-| MongoDB | database | Not specified | turbo.json |
-| pnpm | tool | 10 | package.json |
-| Turbo | build | Not specified | turbo.json |
+| Node.js | language | 24 | .nvmrc |
+| Gatsby | framework | unknown | Dockerfile |
+| pnpm | tool | 10.33.3 | Dockerfile |
+| TurboRepo | build | unknown | turbo.json |
+| MongoDB | database | unknown | turbo.json |
 <!-- nexlayer:end -->
 
 ## Repository Structure
 <!-- nexlayer:section agent-managed=structure_map -->
-- api/ — Backend Express server
+- api/ — Node.js backend API
 - client/ — Gatsby frontend application
-- curriculum/ — Curriculum content and generation logic
-- packages/shared/ — Shared utilities and configuration across workspaces
-- packages/challenge-builder/ — Logic for building and rendering coding challenges
-- packages/challenge-linter/ — Validation tools for curriculum challenges
+- curriculum/ — Challenge definitions and content
+- packages/shared — Shared utilities and configurations
+- packages/challenge-builder — Logic for rendering challenges
 <!-- nexlayer:end -->
 
 ## External Services Required
 <!-- nexlayer:section agent-managed=external_deps -->
 Services that must be configured separately (not deployed by Nexlayer):
 
-- Algolia (Search)
-- Stripe (Donations)
-- MongoDB (Data storage)
+- MongoDB (MONGOHQ_URL)
+- Forum (forumLocation)
 <!-- nexlayer:end -->
 
 ## Local Development Setup
@@ -78,9 +75,14 @@ MONGOHQ_URL=mongodb://localhost:27017/freecodecamp
 
 | Pod | Variable | Value | Kind |
 |-----|----------|-------|------|
-| `client` | `NODE_ENV` | `"production"` | plain |
-| `api` | `PORT` | `"3000"` | plain |
-| `api` | `MONGOHQ_URL` | `"mongodb://${mongodb:27017}/freecodecamp"` | inter-pod |
+| `app` | `FREECODECAMP_NODE_ENV` | `"production"` | plain |
+| `app` | `DEPLOYMENT_ENV` | `"staging"` | plain |
+| `app` | `CLIENT_LOCALE` | `"english"` | plain |
+| `app` | `CURRICULUM_LOCALE` | `"english"` | plain |
+| `app` | `HOME_LOCATION` | `"<% URL %>"` | plain |
+| `app` | `API_LOCATION` | `"<% URL %>/api"` | plain |
+| `app` | `forumLocation` | `"https://forum.freecodecamp.org"` | plain |
+| `app` | `NODE_OPTIONS` | `"--max-old-space-size=8192"` | plain |
 
 ### nexlayer.yaml
 
@@ -88,23 +90,19 @@ MONGOHQ_URL=mongodb://localhost:27017/freecodecamp
 application:
   name: bold-lake-freecodecamp
   pods:
-    - name: client
+    - name: app
       image: "# filled by pipeline"
       servicePorts:
         - 8000
       vars:
-        NODE_ENV: "production"
-    - name: api
-      image: "# filled by pipeline"
-      servicePorts:
-        - 3000
-      vars:
-        PORT: "3000"
-        MONGOHQ_URL: "mongodb://${mongodb:27017}/freecodecamp"
-    - name: mongodb
-      image: mirror.gcr.io/library/mongo:7
-      servicePorts:
-        - 27017
+        FREECODECAMP_NODE_ENV: "production"
+        DEPLOYMENT_ENV: "staging"
+        CLIENT_LOCALE: "english"
+        CURRICULUM_LOCALE: "english"
+        HOME_LOCATION: "<% URL %>"
+        API_LOCATION: "<% URL %>/api"
+        forumLocation: "https://forum.freecodecamp.org"
+        NODE_OPTIONS: "--max-old-space-size=8192"
 ```
 <!-- nexlayer:end -->
 
@@ -138,7 +136,7 @@ application:
 
 ## Nexlayer Configuration
 <!-- nexlayer:section agent-managed=nexlayer_config -->
-**Last deployed:** 2026-06-17T01:08:41Z  
+**Last deployed:** 2026-06-17T04:25:14Z  
 **Live URL:** https://bold-lake-freecodecamp.nexlayer.ai  
 **Runtime:**  · **Port:** auto-detected  
 **Deploy branch:** nexlayer  
@@ -147,23 +145,19 @@ application:
 application:
   name: bold-lake-freecodecamp
   pods:
-    - name: client
+    - name: app
       image: "# filled by pipeline"
       servicePorts:
         - 8000
       vars:
-        NODE_ENV: "production"
-    - name: api
-      image: "# filled by pipeline"
-      servicePorts:
-        - 3000
-      vars:
-        PORT: "3000"
-        MONGOHQ_URL: "mongodb://${mongodb:27017}/freecodecamp"
-    - name: mongodb
-      image: mirror.gcr.io/library/mongo:7
-      servicePorts:
-        - 27017
+        FREECODECAMP_NODE_ENV: "production"
+        DEPLOYMENT_ENV: "staging"
+        CLIENT_LOCALE: "english"
+        CURRICULUM_LOCALE: "english"
+        HOME_LOCATION: "<% URL %>"
+        API_LOCATION: "<% URL %>/api"
+        forumLocation: "https://forum.freecodecamp.org"
+        NODE_OPTIONS: "--max-old-space-size=8192"
 ```
 <!-- nexlayer:end -->
 
@@ -171,8 +165,9 @@ application:
 <!-- nexlayer:section agent-managed=build_history -->
 | Date | Status | Notes |
 |------|--------|-------|
-| 2026-06-17T00:31:26Z | analyzed | initial repo analysis |
-| 2026-06-17T01:08:41Z | success | deployed https://bold-lake-freecodecamp.nexlayer.ai |
+| 2026-06-17T04:01:09Z | analyzed | initial repo analysis |
+| 2026-06-17T04:25:14Z | success | deployed https://bold-lake-freecodecamp.nexlayer.ai |
 <!-- nexlayer:end -->
+
 
 
