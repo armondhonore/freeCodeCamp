@@ -8,6 +8,9 @@ RUN npm i -g corepack@latest && corepack enable && corepack prepare pnpm@10.33.3
 
 COPY . .
 
+# Skip puppeteer's Chrome download — we don't need a browser in the build container
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+
 RUN pnpm install --no-frozen-lockfile
 
 # 1. shared: must compile first — challenge-builder and client both import its dist/ exports
