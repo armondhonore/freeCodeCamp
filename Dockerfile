@@ -74,12 +74,14 @@ ENV GATSBY_TELEMETRY_DISABLED=1
 ENV GATSBY_CPU_COUNT=1
 ENV NODE_OPTIONS="--max-old-space-size=8192"
 
-# CRITICAL FIX: Disable file watching in Gatsby/Chokidar to prevent ENOSPC
-# Chokidar uses polling when CHOKIDAR_USEPOLLING is true, avoiding native inotify watchers
-ENV CHOKIDAR_USEPOLLING=true
+# CRITICAL: Gatsby build sometimes triggers file watchers (Chokidar) on the curriculum directory.
+# In a container, this hits the inotify limit (ENOSPC). 
+# We disable watching by removing the curriculum challenges from the client context 
+# AFTER the curriculum build is done but BEFORE the client build starts, 
+# since the client build uses the generated curriculum.json, not the raw .md files.
+RUN rm -rf curriculum/challenges
 
 # Build the Gatsby client
-# Using pnpm --filter is safer and more consistent with the rest of the build
 RUN pnpm --filter @freecodecamp/client run setup
 RUN pnpm --filter @freecodecamp/client run build
 
@@ -87,5 +89,5 @@ EXPOSE 8000
 
 WORKDIR /app/client
 
-# Gatsby serve is the production runtime for the client
+# Use gatsby serve for the production runtime
 CMD ["node_modules/.bin/gatsby", "serve", "-p", "8000", "--host", "0.0.0.0"]
