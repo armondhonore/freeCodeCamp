@@ -15,7 +15,7 @@
 
 ## Project Summary
 <!-- nexlayer:section agent-managed=project_summary -->
-An open-source learning platform providing interactive coding challenges and certifications across various web development and machine learning curricula.
+freeCodeCamp.org is an open-source learning platform providing a full-stack web development and machine learning curriculum through interactive coding challenges.
 <!-- nexlayer:end -->
 
 ## Technology Stack
@@ -23,34 +23,32 @@ An open-source learning platform providing interactive coding challenges and cer
 | Name | Kind | Version | Detected From |
 |------|------|---------|---------------|
 | Node.js | language | 24 | .nvmrc, package.json |
-| pnpm | tool | 10 | package.json, pnpm-workspace.yaml |
-| MongoDB | database | latest | sample.env |
-| TurboRepo | build | 2.8.7 | turbo.json |
-| Gatsby | framework | latest | nexlayer_error.md |
-| TypeScript | language | 5.9.3 | packages/challenge-linter/package.json |
+| pnpm | tool | 10 | pnpm-workspace.yaml |
+| Turborepo | build | 2.8.7 | turbo.json |
+| MongoDB | database | latest | sample.env, Dockerfile |
+| TypeScript | language | 5.9.3 | packages/eslint-config/package.json |
 <!-- nexlayer:end -->
 
 ## Repository Structure
 <!-- nexlayer:section agent-managed=structure_map -->
-- api/ — Backend server providing REST/GraphQL APIs
-- client/ — Gatsby-based frontend application
-- curriculum/ — Curriculum definitions and challenge content
-- packages/shared/ — Common configuration and utility functions
-- packages/challenge-builder/ — Logic for building and rendering challenges
-- tools/ — Helper scripts for challenge management and seeding
+- api/ — Backend REST API service
+- client/ — Frontend user interface
+- curriculum/ — Challenge definitions and content
+- packages/shared — Shared utilities and configurations
+- packages/challenge-builder — Challenge rendering and testing logic
+- tools/ — Helper scripts for content creation and linting
 <!-- nexlayer:end -->
 
 ## External Services Required
 <!-- nexlayer:section agent-managed=external_deps -->
 Services that must be configured separately (not deployed by Nexlayer):
 
-- Auth0 (OAuth 2.0)
+- Auth0 (Identity Provider)
+- Algolia (Search)
 - Stripe (Payments)
 - PayPal (Payments)
-- Patreon (Payments)
-- Algolia (Search)
+- Patreon (Donations)
 - Sentry (Error Tracking)
-- Growthbook (A/B Testing)
 <!-- nexlayer:end -->
 
 ## Local Development Setup
@@ -83,8 +81,6 @@ MONGOHQ_URL=mongodb://localhost:27017/freecodecamp
 | Pod | Variable | Value | Kind |
 |-----|----------|-------|------|
 | `client` | `NODE_ENV` | `"production"` | plain |
-| `api` | `PORT` | `"3000"` | plain |
-| `api` | `MONGOHQ_URL` | `"mongodb://${mongodb:27017}/freecodecamp"` | inter-pod |
 
 ### nexlayer.yaml
 
@@ -98,17 +94,6 @@ application:
         - 8000
       vars:
         NODE_ENV: "production"
-    - name: api
-      image: "# filled by pipeline"
-      servicePorts:
-        - 3000
-      vars:
-        PORT: "3000"
-        MONGOHQ_URL: "mongodb://${mongodb:27017}/freecodecamp"
-    - name: mongodb
-      image: mirror.gcr.io/library/mongo:7
-      servicePorts:
-        - 27017
 ```
 <!-- nexlayer:end -->
 
@@ -142,7 +127,7 @@ application:
 
 ## Nexlayer Configuration
 <!-- nexlayer:section agent-managed=nexlayer_config -->
-**Last deployed:** 2026-06-17T22:35:34Z  
+**Last deployed:** 2026-06-17T23:12:54Z  
 **Live URL:** https://bold-lake-freecodecamp.nexlayer.ai  
 **Runtime:**  · **Port:** auto-detected  
 **Deploy branch:** nexlayer  
@@ -157,17 +142,6 @@ application:
         - 8000
       vars:
         NODE_ENV: "production"
-    - name: api
-      image: "# filled by pipeline"
-      servicePorts:
-        - 3000
-      vars:
-        PORT: "3000"
-        MONGOHQ_URL: "mongodb://${mongodb:27017}/freecodecamp"
-    - name: mongodb
-      image: mirror.gcr.io/library/mongo:7
-      servicePorts:
-        - 27017
 ```
 <!-- nexlayer:end -->
 
@@ -175,9 +149,10 @@ application:
 <!-- nexlayer:section agent-managed=build_history -->
 | Date | Status | Notes |
 |------|--------|-------|
-| 2026-06-17T22:00:23Z | analyzed | initial repo analysis |
-| 2026-06-17T22:35:34Z | success | deployed https://bold-lake-freecodecamp.nexlayer.ai |
+| 2026-06-17T22:46:50Z | analyzed | initial repo analysis |
+| 2026-06-17T23:12:54Z | success | deployed https://bold-lake-freecodecamp.nexlayer.ai |
 <!-- nexlayer:end -->
+
 
 
 

@@ -2,6 +2,7 @@ FROM mirror.gcr.io/library/node:22-slim
 # build-time env seeded from sample.env
 ENV ALGOLIA_API_KEY=nexlayer-placeholder
 ENV ALGOLIA_APP_ID=nexlayer-placeholder
+ENV API_LOCATION=http://localhost:3000
 ENV AUTH0_CLIENT_ID=nexlayer-placeholder
 ENV AUTH0_CLIENT_SECRET=nexlayer-placeholder
 ENV AUTH0_DOMAIN=example.auth0.com
@@ -13,14 +14,18 @@ ENV FCC_ENABLE_DEV_LOGIN_MODE=true
 ENV FCC_ENABLE_SENTRY_ROUTES=false
 ENV FCC_ENABLE_SHADOW_CAPTURE=false
 ENV FCC_ENABLE_SWAGGER_UI=true
+ENV FORUM_LOCATION=https://forum.freecodecamp.org
 ENV GATSBY_UPDATE_SCHEMA_SNAPSHOT=false
 ENV GROWTHBOOK_FASTIFY_API_HOST=nexlayer-placeholder
 ENV GROWTHBOOK_FASTIFY_CLIENT_KEY=nexlayer-placeholder
 ENV GROWTHBOOK_URI=nexlayer-placeholder
+ENV HOME_LOCATION=http://localhost:8000
 ENV JWT_SECRET=a_jwt_secret
 ENV MONGOHQ_URL=mongodb://127.0.0.1:27017/freecodecamp?directConnection=true
+ENV NEWS_LOCATION=https://www.freecodecamp.org/news
 ENV PATREON_CLIENT_ID=nexlayer-placeholder
 ENV PAYPAL_CLIENT_ID=nexlayer-placeholder
+ENV RADIO_LOCATION=https://coderadio.freecodecamp.org
 ENV SENTRY_CLIENT_DSN=nexlayer-placeholder
 ENV SENTRY_DSN=nexlayer-placeholder
 ENV SENTRY_ENVIRONMENT=development
@@ -34,12 +39,11 @@ ENV STRIPE_PUBLIC_KEY=nexlayer-placeholder
 ENV STRIPE_SECRET_KEY=nexlayer-placeholder
 
 # Install native build tools and essential utilities
-# unzip/tar are required by puppeteer for browser extraction
 RUN apt-get update && apt-get install -y python3 make g++ git ca-certificates unzip tar && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Use corepack for pnpm 10 as specified in packageManager
+# Use corepack for pnpm 10
 RUN npm i -g corepack@latest && corepack enable && corepack prepare pnpm@10.33.3 --activate
 
 COPY . .
@@ -50,44 +54,38 @@ ENV PUPPETEER_SKIP_DOWNLOAD=true
 # Install dependencies
 RUN pnpm install --no-frozen-lockfile
 
-# Build sequence to resolve TypeScript cross-dependency issues
+# Build sequence for monorepo dependencies
 RUN pnpm --filter @freecodecamp/shared run build
-RUN pnpm --filter @freecodecamp/challenge-linter run build
 RUN pnpm --filter @freecodecamp/browser-scripts run build
+RUN pnpm --filter @freecodecamp/challenge-linter run build
 RUN pnpm --filter @freecodecamp/challenge-builder run build
 
-# Curriculum setup and build
+# Setup and build curriculum
 ENV CURRICULUM_LOCALE=english
 RUN pnpm --filter @freecodecamp/curriculum run setup
 RUN pnpm --filter @freecodecamp/curriculum run build
 
-# Client environment setup
+# Production environment variables for Gatsby build
 ENV FREECODECAMP_NODE_ENV=production
 ENV DEPLOYMENT_ENV=staging
 ENV CLIENT_LOCALE=english
 ENV SHOW_UPCOMING_CHANGES=false
-ENV HOME_LOCATION=https://placeholder.nexlayer.ai
-ENV API_LOCATION=https://placeholder.nexlayer.ai/api
-ENV FORUM_LOCATION=https://forum.freecodecamp.org
-ENV NEWS_LOCATION=https://www.freecodecamp.org/news
-ENV RADIO_LOCATION=https://coderadio.freecodecamp.org
-
-# Generate the env.json required by Gatsby
-RUN cd client && pnpm run create:env
-
-# Fix ENOSPC by disabling file watching during build
-ENV CHOKIDAR_USEPOLLING=true
+ENV GATSBY_TELEMETRY_DISABLED=1
 ENV GATSBY_CPU_COUNT=1
+ENV NODE_OPTIONS="--max-old-space-size=8192"
 
-# Increase memory limit for the heavy Gatsby build process
-ENV NODE_OPTIONS="--max-old-space-size=7168"
+# CRITICAL FIX: Disable file watching in Gatsby/Chokidar to prevent ENOSPC
+# Chokidar uses polling when CHOKIDAR_USEPOLLING is true, avoiding native inotify watchers
+ENV CHOKIDAR_USEPOLLING=true
 
-# Build the Gatsby site
-RUN cd client && pnpm run build
+# Build the Gatsby client
+# Using pnpm --filter is safer and more consistent with the rest of the build
+RUN pnpm --filter @freecodecamp/client run setup
+RUN pnpm --filter @freecodecamp/client run build
 
 EXPOSE 8000
 
 WORKDIR /app/client
 
-# Use gatsby serve via pnpm script
-CMD ["pnpm", "run", "serve"]
+# Gatsby serve is the production runtime for the client
+CMD ["node_modules/.bin/gatsby", "serve", "-p", "8000", "--host", "0.0.0.0"]
