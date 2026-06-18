@@ -91,5 +91,4 @@ EXPOSE 8000
 
 WORKDIR /app/client
 
-# Use gatsby serve for the production runtime
-CMD ["node_modules/.bin/gatsby", "serve", "-p", "8000", "--host", "0.0.0.0"]
+CMD ["node_modules/.bin/serve", "-l", "tcp://0.0.0.0:8000", "public"]

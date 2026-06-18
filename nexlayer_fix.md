@@ -52,7 +52,7 @@ EXPOSE 8000
 
 WORKDIR /app/client
 
-CMD ["node_modules/.bin/gatsby", "serve", "-p", "8000", "--host", "0.0.0.0"]
+CMD ["node_modules/.bin/serve", "-l", "tcp://0.0.0.0:8000", "public"]
 ```
 
 ## Fixed nexlayer.yaml
@@ -83,7 +83,8 @@ Build order:
 6. `curriculum run build` — generates curriculum.json (REQUIRED — without this allSuperBlockStructure GraphQL type does not exist and gatsby build fails with #85923)
 7. `rm -rf curriculum/challenges` — removes ~35k raw markdown files before client build; gatsby-source-challenges reads from curriculum.json only, not raw .md files; reduces inotify watch surface
 8. `@freecodecamp/client run setup` — runs create:env + create:trending + create:search-placeholder + create:external-curriculum + copy:scripts; must be setup not create:env — webpack fails without trending.json and search-bar.json
-9. `@freecodecamp/client run build` — Gatsby production build
+9. `@freecodecamp/client run build` — Gatsby production build; outputs to /app/client/public/
+10. `serve -l tcp://0.0.0.0:8000 public` — serves public/ via the `serve` package (devDep of client). Starts in <1s vs gatsby serve's full init. Uses explicit tcp://0.0.0.0 to guarantee all-interface binding.
 
 Key points — DO NOT change these without understanding why:
 - **CHOKIDAR_USEPOLLING=true + WATCHPACK_POLLING=true** — Docker containers have a very low inotify watch limit (default 8192). Without these, webpack/chokidar exhausts inotify watches on the large node_modules tree and fails with ENOSPC. These bypass inotify entirely. NEVER replace with GATSBY_TELEMETRY_DISABLED or "non-watch" alternatives.
