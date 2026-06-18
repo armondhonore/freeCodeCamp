@@ -3,6 +3,7 @@ application:
   pods:
     - name: client
       image: "# filled by pipeline"
+      path: /
       servicePorts:
         - 8000
       vars:

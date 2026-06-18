@@ -66,6 +66,7 @@ application:
   pods:
     - name: app
       image: "# filled by pipeline"
+      path: /
       servicePorts:
         - 8000
       vars:
