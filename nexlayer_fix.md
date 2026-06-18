@@ -37,6 +37,7 @@ ENV SHOW_UPCOMING_CHANGES=false
 ENV GATSBY_TELEMETRY_DISABLED=1
 ENV GATSBY_CPU_COUNT=2
 ENV NODE_OPTIONS="--max-old-space-size=8192"
+ENV CHOKIDAR_USEPOLLING=true
 
 RUN cd client && pnpm run setup
 
@@ -78,6 +79,7 @@ Build order:
 8. `client run build` — Gatsby production build
 
 Key points:
+- CHOKIDAR_USEPOLLING=true is REQUIRED — Docker containers have a very low inotify watch limit (default 8192). Without this, webpack/chokidar exhausts inotify watches on the large node_modules tree and fails with ENOSPC. Setting CHOKIDAR_USEPOLLING=true bypasses inotify entirely. DO NOT remove or replace with GATSBY_TELEMETRY_DISABLED or other non-watch fixes.
 - GATSBY_UPDATE_SCHEMA_SNAPSHOT must NOT be set to true — it skips applying schema.gql types, dropping head/tail GraphQL fields and breaking query extraction
 - GATSBY_CPU_COUNT=2 prevents OOM during HTML generation (18k+ pages × uncapped workers = killed)
 - Nexlayer seeds HOME_LOCATION, API_LOCATION, STRIPE_PUBLIC_KEY, PAYPAL_CLIENT_ID, PATREON_CLIENT_ID, GROWTHBOOK_URI, ALGOLIA_APP_ID, ALGOLIA_API_KEY from sample env — these do not need to be hardcoded here
