@@ -15,7 +15,7 @@
 
 ## Project Summary
 <!-- nexlayer:section agent-managed=project_summary -->
-freeCodeCamp.org is an open-source learning platform providing a full-stack web development and machine learning curriculum through interactive coding challenges.
+freeCodeCamp is an open-source learning platform providing a full-stack web development and machine learning curriculum with interactive coding challenges.
 <!-- nexlayer:end -->
 
 ## Technology Stack
@@ -24,31 +24,32 @@ freeCodeCamp.org is an open-source learning platform providing a full-stack web 
 |------|------|---------|---------------|
 | Node.js | language | 24 | .nvmrc, package.json |
 | pnpm | tool | 10 | pnpm-workspace.yaml |
-| Turborepo | build | 2.8.7 | turbo.json |
-| MongoDB | database | latest | sample.env, Dockerfile |
+| Turborepo | build | 2.8.3 | turbo.json |
+| MongoDB | database | latest | sample.env |
 | TypeScript | language | 5.9.3 | packages/eslint-config/package.json |
 <!-- nexlayer:end -->
 
 ## Repository Structure
 <!-- nexlayer:section agent-managed=structure_map -->
-- api/ — Backend REST API service
+- api/ — Backend API services
 - client/ — Frontend user interface
 - curriculum/ — Challenge definitions and content
-- packages/shared — Shared utilities and configurations
-- packages/challenge-builder — Challenge rendering and testing logic
-- tools/ — Helper scripts for content creation and linting
+- packages/shared — Shared utilities and configuration across workspaces
+- packages/challenge-builder — Logic for rendering and testing challenges
+- tools/ — Developer scripts and helper utilities
 <!-- nexlayer:end -->
 
 ## External Services Required
 <!-- nexlayer:section agent-managed=external_deps -->
 Services that must be configured separately (not deployed by Nexlayer):
 
-- Auth0 (Identity Provider)
-- Algolia (Search)
-- Stripe (Payments)
-- PayPal (Payments)
-- Patreon (Donations)
-- Sentry (Error Tracking)
+- Auth0 (AUTH0_DOMAIN)
+- Stripe (STRIPE_SECRET_KEY)
+- PayPal (PAYPAL_CLIENT_ID)
+- Patreon (PATREON_CLIENT_ID)
+- Algolia (ALGOLIA_API_KEY)
+- Growthbook (GROWTHBOOK_URI)
+- Sentry (SENTRY_DSN)
 <!-- nexlayer:end -->
 
 ## Local Development Setup
@@ -89,7 +90,8 @@ application:
   name: bold-lake-freecodecamp
   pods:
     - name: client
-      image: "# filled by pipeline"
+      image: "registry.nexlayer.io/user_01kece1xyh817dwff7wnarhkxd/freecodecamp:19edb8927b2"
+      path: /
       servicePorts:
         - 8000
       vars:
@@ -127,8 +129,8 @@ application:
 
 ## Nexlayer Configuration
 <!-- nexlayer:section agent-managed=nexlayer_config -->
-**Last deployed:** 2026-06-17T23:30:45Z  
-**Live URL:** https://bold-lake-freecodecamp.nexlayer.ai  
+**Last deployed:** 2026-06-18T16:36:36Z  
+**Live URL:** https://relaxed-weasel-bold-lake-freecodecamp.cloud.nexlayer.ai  
 **Runtime:**  · **Port:** auto-detected  
 **Deploy branch:** nexlayer  
 
@@ -137,7 +139,8 @@ application:
   name: bold-lake-freecodecamp
   pods:
     - name: client
-      image: "# filled by pipeline"
+      image: "registry.nexlayer.io/user_01kece1xyh817dwff7wnarhkxd/freecodecamp:19edb8927b2"
+      path: /
       servicePorts:
         - 8000
       vars:
@@ -149,9 +152,10 @@ application:
 <!-- nexlayer:section agent-managed=build_history -->
 | Date | Status | Notes |
 |------|--------|-------|
-| 2026-06-17T22:46:50Z | analyzed | initial repo analysis |
-| 2026-06-17T23:30:45Z | success | deployed https://bold-lake-freecodecamp.nexlayer.ai |
+| 2026-06-18T16:21:33Z | analyzed | initial repo analysis |
+| 2026-06-18T16:36:36Z | success | deployed https://relaxed-weasel-bold-lake-freecodecamp.cloud.nexlayer.ai |
 <!-- nexlayer:end -->
+
 
 
 

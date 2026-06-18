@@ -16,7 +16,7 @@ project:
   name: bold-lake-freecodecamp
   runtime: 
   port: 80
-  live_url: "https://bold-lake-freecodecamp.nexlayer.ai"
+  live_url: "https://relaxed-weasel-bold-lake-freecodecamp.cloud.nexlayer.ai"
   deploy_branch: nexlayer
   repo: "https://github.com/armondhonore/freeCodeCamp"
   config_files:

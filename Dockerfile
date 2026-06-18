@@ -38,34 +38,31 @@ ENV SOCRATES_ENDPOINT=https://localhost:4000
 ENV STRIPE_PUBLIC_KEY=nexlayer-placeholder
 ENV STRIPE_SECRET_KEY=nexlayer-placeholder
 
-# Install native build tools and essential utilities
 RUN apt-get update && apt-get install -y python3 make g++ git ca-certificates unzip tar && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Use corepack for pnpm 10
 RUN npm i -g corepack@latest && corepack enable && corepack prepare pnpm@10.33.3 --activate
 
 COPY . .
 
-# Skip puppeteer's Chrome download
 ENV PUPPETEER_SKIP_DOWNLOAD=true
 
-# Install dependencies
 RUN pnpm install --no-frozen-lockfile
 
-# Build sequence for monorepo dependencies
 RUN pnpm --filter @freecodecamp/shared run build
+
 RUN pnpm --filter @freecodecamp/browser-scripts run build
+
 RUN pnpm --filter @freecodecamp/challenge-linter run build
+
 RUN pnpm --filter @freecodecamp/challenge-builder run build
 
-# Setup and build curriculum
 ENV CURRICULUM_LOCALE=english
 RUN pnpm --filter @freecodecamp/curriculum run setup
+
 RUN pnpm --filter @freecodecamp/curriculum run build
 
-# Production environment variables for Gatsby build
 ENV FREECODECAMP_NODE_ENV=production
 ENV DEPLOYMENT_ENV=staging
 ENV CLIENT_LOCALE=english
@@ -76,15 +73,10 @@ ENV NODE_OPTIONS="--max-old-space-size=8192"
 ENV CHOKIDAR_USEPOLLING=true
 ENV WATCHPACK_POLLING=true
 
-# CRITICAL: Gatsby build sometimes triggers file watchers (Chokidar) on the curriculum directory.
-# In a container, this hits the inotify limit (ENOSPC). 
-# We disable watching by removing the curriculum challenges from the client context 
-# AFTER the curriculum build is done but BEFORE the client build starts, 
-# since the client build uses the generated curriculum.json, not the raw .md files.
 RUN rm -rf curriculum/challenges
 
-# Build the Gatsby client
 RUN pnpm --filter @freecodecamp/client run setup
+
 RUN pnpm --filter @freecodecamp/client run build
 
 EXPOSE 8000
