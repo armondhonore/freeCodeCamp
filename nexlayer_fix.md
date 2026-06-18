@@ -2,6 +2,18 @@
 
 This file is the authoritative, pinned build solution for this repo. Nexlayer uses it verbatim on every run and will not override it. If a future build with this fix fails, Nexlayer appends/updates it rather than regenerating.
 
+## CRITICAL BUILD CONSTRAINTS
+
+**READ BEFORE MODIFYING THE DOCKERFILE BELOW:**
+
+1. **`COPY . .` MUST come before `RUN pnpm install`** — this is a pnpm monorepo. Every workspace package has its own `package.json` (`client/`, `curriculum/`, `packages/*/`). If only root files (`pnpm-lock.yaml`, `pnpm-workspace.yaml`, `package.json`) are copied before install, pnpm cannot resolve workspace members and install fails with exit status 1. Do NOT split COPY to optimize layer caching.
+
+2. **Do not add `|| true` to any RUN step** — silent failures in upstream packages (shared, challenge-linter, challenge-builder) cause the curriculum and Gatsby builds to fail with cryptic missing-module errors downstream.
+
+3. **Do not change the base image from `node:24`** — this image was verified by a successful local build. `node:22-slim` has not been verified.
+
+4. **Do not add MongoDB or any second pod** — the Gatsby build produces a static site. There is no runtime database dependency.
+
 ## Fixed Dockerfile
 
 ```dockerfile
