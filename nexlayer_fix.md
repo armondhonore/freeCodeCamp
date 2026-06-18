@@ -35,13 +35,15 @@ ENV DEPLOYMENT_ENV=staging
 ENV CLIENT_LOCALE=english
 ENV SHOW_UPCOMING_CHANGES=false
 ENV GATSBY_TELEMETRY_DISABLED=1
-ENV GATSBY_CPU_COUNT=2
+ENV GATSBY_CPU_COUNT=4
 ENV NODE_OPTIONS="--max-old-space-size=8192"
 ENV CHOKIDAR_USEPOLLING=true
 
-RUN cd client && pnpm run setup
+RUN rm -rf curriculum/challenges
 
-RUN cd client && pnpm run build
+RUN pnpm --filter @freecodecamp/client run setup
+
+RUN pnpm --filter @freecodecamp/client run build
 
 EXPOSE 8000
 
@@ -80,6 +82,7 @@ Build order:
 
 Key points:
 - CHOKIDAR_USEPOLLING=true is REQUIRED — Docker containers have a very low inotify watch limit (default 8192). Without this, webpack/chokidar exhausts inotify watches on the large node_modules tree and fails with ENOSPC. Setting CHOKIDAR_USEPOLLING=true bypasses inotify entirely. DO NOT remove or replace with GATSBY_TELEMETRY_DISABLED or other non-watch fixes.
+- `rm -rf curriculum/challenges` after `curriculum run build` — removes ~35k raw markdown files that would otherwise be scanned by file watchers during the client build. gatsby-source-challenges reads from curriculum.json, not the raw .md files, so this is safe.
 - GATSBY_UPDATE_SCHEMA_SNAPSHOT must NOT be set to true — it skips applying schema.gql types, dropping head/tail GraphQL fields and breaking query extraction
 - GATSBY_CPU_COUNT=2 prevents OOM during HTML generation (18k+ pages × uncapped workers = killed)
 - Nexlayer seeds HOME_LOCATION, API_LOCATION, STRIPE_PUBLIC_KEY, PAYPAL_CLIENT_ID, PATREON_CLIENT_ID, GROWTHBOOK_URI, ALGOLIA_APP_ID, ALGOLIA_API_KEY from sample env — these do not need to be hardcoded here

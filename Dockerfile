@@ -1,4 +1,4 @@
-FROM mirror.gcr.io/library/node:22-slim
+FROM mirror.gcr.io/library/node:24
 # build-time env seeded from sample.env
 ENV ALGOLIA_API_KEY=nexlayer-placeholder
 ENV ALGOLIA_APP_ID=nexlayer-placeholder
@@ -71,7 +71,7 @@ ENV DEPLOYMENT_ENV=staging
 ENV CLIENT_LOCALE=english
 ENV SHOW_UPCOMING_CHANGES=false
 ENV GATSBY_TELEMETRY_DISABLED=1
-ENV GATSBY_CPU_COUNT=1
+ENV GATSBY_CPU_COUNT=4
 ENV NODE_OPTIONS="--max-old-space-size=8192"
 ENV CHOKIDAR_USEPOLLING=true
 
