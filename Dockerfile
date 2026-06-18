@@ -74,6 +74,7 @@ ENV GATSBY_TELEMETRY_DISABLED=1
 ENV GATSBY_CPU_COUNT=4
 ENV NODE_OPTIONS="--max-old-space-size=8192"
 ENV CHOKIDAR_USEPOLLING=true
+ENV WATCHPACK_POLLING=true
 
 # CRITICAL: Gatsby build sometimes triggers file watchers (Chokidar) on the curriculum directory.
 # In a container, this hits the inotify limit (ENOSPC). 
